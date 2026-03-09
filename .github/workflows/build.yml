@@ -35,11 +35,8 @@ jobs:
         MACOSX_DEPLOYMENT_TARGET: 10.14
       run: make optimized
 
-    - name: Add to release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        npm test && npm run upload
+    - name: Run tests
+      run: npm test
 
   windows:
     strategy:
@@ -71,12 +68,17 @@ jobs:
     - name: Build module
       run: make optimized
 
-    - name: Add to release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Run tests
       run: |
         npm config set script-shell bash
-        npm test && npm run upload
+        npm test
+
+    - name: Upload binary artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: skia-node-windows-${{ matrix.arch }}
+        path: lib/skia.node
+        if-no-files-found: error
 
 
   linux:
